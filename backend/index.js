@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 })
 app.use('/new',require('./Routes/CreateUser'));
 app.use('/new',require('./Routes/DisplayData'));
+app.use('/new',require('./Routes/OrderData'));
 
 app.listen(port, () => {
  console.log(`Example app listening on port ${port}`)

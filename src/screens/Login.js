@@ -30,6 +30,7 @@ export default function Login() {
       alert('Error: Please check your input');
       console.log(resp.errors);
     } else {
+      localStorage.setItem("userEmail",first.email)
       localStorage.setItem("authToken",JSON.authToken)
       navigate("/");
       // alert('User created successfully!');
