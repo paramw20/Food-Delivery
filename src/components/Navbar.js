@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
-import { Link,useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Badge from 'react-bootstrap/Badge';
+import Modal from '../Modal';
 import { useCart, useDispatchCart } from './ContextReducer';
-import Badge from 'react-bootstrap/Badge'
-import Modal from '../Modal'
+
 export default function Navbar() {
-  const [cartView,setCartView]=useState(false)
-  const cart = useCart(); // Access the cart items array
+  const [cartView, setCartView] = useState(false);
+  const cart = useCart();
   const dispatch = useDispatchCart();
-  const navigate=useNavigate()
-  const handleLogout=()=>{
-    localStorage.removeItem("authToken")
-    navigate('/')
-  }
-  const totalPrice = cart.reduce((acc, item) => acc + (item.qty * item.price), 0);
-  
-  const handleDelete = (itemId, itemName, itemSize) => { // Pass additional parameters
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    navigate('/');
+  };
+
+  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
+
+  const handleDelete = itemId => {
     dispatch({
       type: 'REMOVE',
       id: itemId,
-      name: itemName,
-      size: itemSize, // Pass size for identification
     });
   };
 
@@ -44,74 +45,65 @@ export default function Navbar() {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2">
               <li className="nav-item">
-                <Link
-                  className="nav-link active fs-5"
-                  aria-current="page"
-                  to="/"
-                >
+                <Link className="nav-link active fs-5" aria-current="page" to="/">
                   Home
                 </Link>
               </li>
-              {(localStorage.getItem('authToken')) ? 
+              {localStorage.getItem('authToken') && (
                 <li className="nav-item">
-                  <Link
-                    className="nav-link active fs-5"
-                    aria-current="page"
-                    to="/"
-                  >
-                    MY Orders
+                  <Link className="nav-link active fs-5" aria-current="page" to="/">
+                    My Orders
                   </Link>
                 </li>
-               : (
-                ''
               )}
             </ul>
-            
-            {!(localStorage.getItem('authToken'))? <div className="d-flex"> <div className="d-flex">
-              
-              <Link className="btn bg-white text-success mx-1" to="/login">
-                Login
-              </Link>
 
-              <Link className="btn bg-white text-success mx-1" to="/signup">
-                Signup
-              </Link>
-            </div></div>:
-            <div>
-            <div className="btn bg-white text-success mx-2" onClick={() => setCartView(true)}>
-              My Cart{' '}
-              <Badge pill bg="danger">{cart.length}</Badge>
-            </div>
-            {cartView ? (
-              <Modal onClose={() => setCartView(false)}>
-                {cart.length > 0 ? (
-                  <> {/* Wrap in a fragment since returning multiple elements */}
-                    <ul>
-                      {cart.map((item) => (
-                        <li key={item.id}>
-                          {item.name} - Qty: {item.qty} - Price: ₹{item.price.toFixed(2)}
-                          <button
-                            className="btn btn-sm btn-danger mx-2"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            Delete
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                    <p>Total Price: ₹{totalPrice.toFixed(2)}</p>
-                  </>
-                ) : (
-                  <p>Your cart is empty.</p>
+            {!localStorage.getItem('authToken') ? (
+              <div className="d-flex">
+                <Link className="btn bg-white text-success mx-1" to="/login">
+                  Login
+                </Link>
+                <Link className="btn bg-white text-success mx-1" to="/signup">
+                  Signup
+                </Link>
+              </div>
+            ) : (
+              <div>
+                <div className="btn bg-white text-success mx-2" onClick={() => setCartView(true)}>
+                  My Cart{' '}
+                  <Badge pill bg="danger">
+                    {cart.length}
+                  </Badge>
+                </div>
+                {cartView && (
+                  <Modal onClose={() => setCartView(false)}>
+                    {cart.length > 0 ? (
+                      <>
+                        <ul>
+                          {cart.map(item => (
+                            <li key={item.id}>
+                              {item.name} - Qty: {item.qty} - Price: ₹{item.price.toFixed(2)}
+                              <button
+                                className="btn btn-sm btn-danger mx-2"
+                                onClick={() => handleDelete(item.id)}
+                              >
+                                Delete
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                        <p>Total Price: ₹{totalPrice.toFixed(2)}</p>
+                      </>
+                    ) : (
+                      <p>Your cart is empty.</p>
+                    )}
+                  </Modal>
                 )}
-              </Modal>
-            ) : null}
-                <div className='btn bg-white text-success mx-2' onClick={handleLogout}>Logout</div>
-            </div>
-           
-            }
-             
-            
+                <div className="btn bg-white text-success mx-2" onClick={handleLogout}>
+                  Logout
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>

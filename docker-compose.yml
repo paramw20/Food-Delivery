@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  frontend:
+    build: .  # Assuming your frontend Dockerfile is at the root of my-react-app
+    ports:
+      - "80:80" 
+  backend:
+    build: ./backend  # Assuming 'server' contains your backend code and Dockerfile
+    ports:
+      - "3000:3000"  # Adjust if your backend exposes a different port
+    depends_on:
+      - db  
+    environment:
+      - MONGO_URI="mongodb+srv://food:food123@cluster0.tldmqpb.mongodb.net/food?retryWrites=true&w=majority"  
+  db:  
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - my-dbdata:/data/db  
+volumes:
+  my-dbdata: 
